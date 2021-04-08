@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "todo",
+  "title": "car",
   "type": "object",
   "properties": {
     "name": {
@@ -8,11 +8,8 @@
     },
     "dueDate": {
       "type": "string"
-    },
-    "done": {
-      "type": "boolean"
     }
   },
-  "required": ["dueDate", "name", "done"],
+  "required": ["dueDate", "name"],
   "additionalProperties": false
 }

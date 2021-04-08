@@ -3,7 +3,7 @@ import "source-map-support/register";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as middy from "middy";
 import { cors } from "middy/middlewares";
-import { getAllTodos } from "../../businessLogic/cars";
+import { getAllCars } from "../../businessLogic/cars";
 
 import { createLogger } from "../../utils/logger";
 const logger = createLogger("getTodos");
@@ -15,7 +15,7 @@ export const handler = middy(
     const authorization = event.headers.Authorization;
     const split = authorization.split(" ");
     const jwtToken = split[1];
-    const items = await getAllTodos(jwtToken);
+    const items = await getAllCars(jwtToken);
 
     logger.info("items", items);
     return {

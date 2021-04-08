@@ -5,17 +5,17 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as middy from "middy";
 import { cors } from "middy/middlewares";
 import { generateUploadUrl } from "../../businessLogic/attachments";
-import { todoExists, updateTodoAttachment } from "../../businessLogic/cars";
+import { carExists, updateCarAttachment } from "../../businessLogic/cars";
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId;
-    console.log(todoId);
+    const carId = event.pathParameters.carId;
+    console.log(carId);
     const authorization = event.headers.Authorization;
     const split = authorization.split(" ");
     const jwtToken = split[1];
 
-    const validTodoId = await todoExists(todoId, jwtToken);
+    const validTodoId = await carExists(carId, jwtToken);
     if (!validTodoId) {
       return {
         statusCode: 404,
@@ -25,9 +25,9 @@ export const handler = middy(
       };
     }
 
-    const sigUrl = await generateUploadUrl(todoId);
+    const sigUrl = await generateUploadUrl(carId);
 
-    await updateTodoAttachment(todoId, jwtToken);
+    await updateCarAttachment(carId, jwtToken);
 
     return {
       statusCode: 200,

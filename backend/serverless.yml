@@ -29,10 +29,10 @@ custom:
     models:
       - name: CarRequest
         contentType: application/json
-        schema: ${file(models/create-todo-request.json)}
+        schema: ${file(models/create-car-request.json)}
       - name: CarUpdateRequest
         contentType: application/json
-        schema: ${file(models/update-todo-request.json)}
+        schema: ${file(models/update-car-request.json)}
 
 provider:
   name: aws
@@ -49,7 +49,7 @@ provider:
   environment:
     CAR_TABLE: Cars-${self:provider.stage}
     CAR_USER_ID: CarUserId
-    ATTACHMENTS_S3_BUCKET: sercerless-udagram-attachements-datacamp267-abc-${self:provider.stage}
+    CARS_S3_BUCKET: sercerless-udagram-cars-datacamp267-abc-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
 functions:
@@ -113,8 +113,8 @@ functions:
               type: "request"
           reqValidatorName: RequestBodyValidator
           documentation:
-            summary: Update a todo
-            description: Update a todo
+            summary: Update a car
+            description: Update a car
             requestModels:
               "application/json": CarUpdateRequest
     iamRoleStatements:
@@ -167,7 +167,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENTS_S3_BUCKET}/*
+        Resource: arn:aws:s3:::${self:provider.environment.CARS_S3_BUCKET}/*
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
@@ -231,7 +231,7 @@ resources:
     AttachmentsBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:provider.environment.ATTACHMENTS_S3_BUCKET}
+        BucketName: ${self:provider.environment.CARS_S3_BUCKET}
         Tags:
           - Key: "Allowed_Public_Access"
             Value: "True"
@@ -265,5 +265,5 @@ resources:
               Effect: Allow
               Principal: "*"
               Action: "s3:GetObject"
-              Resource: "arn:aws:s3:::${self:provider.environment.ATTACHMENTS_S3_BUCKET}/*"
+              Resource: "arn:aws:s3:::${self:provider.environment.CARS_S3_BUCKET}/*"
         Bucket: !Ref AttachmentsBucket

@@ -2,23 +2,23 @@ import "source-map-support/register";
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
-import { UpdateTodoRequest } from "../../requests/UpdateCarRequest";
-import { updateTodo } from "../../businessLogic/cars";
+import { UpdateCarRequest } from "../../requests/UpdateCarRequest";
+import { updateCar } from "../../businessLogic/cars";
 
 import * as middy from "middy";
 import { cors } from "middy/middlewares";
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId;
-    const updatedTodo: UpdateTodoRequest = JSON.parse(event.body);
-    console.log(todoId);
+    const carId = event.pathParameters.carId;
+    const updatedTodo: UpdateCarRequest = JSON.parse(event.body);
+    console.log(carId);
     console.log(updatedTodo);
     const authorization = event.headers.Authorization;
     const split = authorization.split(" ");
     const jwtToken = split[1];
 
-    updateTodo(todoId, jwtToken, updatedTodo);
+    updateCar(carId, jwtToken, updatedTodo);
 
     return {
       statusCode: 200,

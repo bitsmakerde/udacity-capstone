@@ -1,4 +1,4 @@
-export interface TodoItem {
+export interface CarItem {
   userId: string;
   carId: string;
   createdAt: string;

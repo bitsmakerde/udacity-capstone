@@ -3,26 +3,26 @@ const AWSXRay = require("aws-xray-sdk");
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { createLogger } from "../utils/logger";
-const logger = createLogger("todoAccess");
+const logger = createLogger("carAccess");
 const XAWS = AWSXRay.captureAWS(AWS);
 
-import { TodoItem } from "../models/CarItem";
-import { TodoUpdate } from "../models/CarUpdate";
+import { CarItem } from "../models/CarItem";
+import { CarUpdate } from "../models/CarUpdate";
 
-export class TodosAccess {
+export class CarsAccess {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly todosTable = process.env.PARCPLACES_TABLE,
-    private readonly todoUserId = process.env.CAR_USER_ID,
+    private readonly carsTable = process.env.PARCPLACES_TABLE,
+    private readonly carUserId = process.env.CAR_USER_ID,
     private readonly bucketName = process.env.ATTACHMENTS_S3_BUCKET
   ) {}
 
-  async getTodosFor(userId: string): Promise<TodoItem[]> {
-    console.log("Getting all todos userId: ", userId);
+  async getCarsFor(userId: string): Promise<CarItem[]> {
+    console.log("Getting all cars userId: ", userId);
 
     var params = {
-      TableName: this.todosTable,
-      IndexName: this.todoUserId,
+      TableName: this.carsTable,
+      IndexName: this.carUserId,
       KeyConditionExpression: "userId = :userId",
       ExpressionAttributeValues: {
         ":userId": userId,
@@ -34,53 +34,53 @@ export class TodosAccess {
     const items = result.Items;
     logger.info("items", result);
     logger.info("items", items);
-    return items as TodoItem[];
+    return items as CarItem[];
   }
 
-  async getTodoFor(todoId: string, userId: string): Promise<TodoItem> {
-    logger.info("Getting one todo item based on todoId and userId", {
+  async getCarFor(carId: string, userId: string): Promise<CarItem> {
+    logger.info("Getting one car item based on carId and userId", {
       user: userId,
-      item: todoId,
+      item: carId,
     });
     const result = await this.docClient
       .query({
-        TableName: this.todosTable,
-        IndexName: this.todoUserId,
-        KeyConditionExpression: "userId = :userId and todoId = :todoId",
+        TableName: this.carsTable,
+        IndexName: this.carUserId,
+        KeyConditionExpression: "userId = :userId and carId = :carId",
         ExpressionAttributeValues: {
           ":userId": userId,
-          ":todoId": todoId,
+          ":carId": carId,
         },
       })
       .promise();
 
     const item = result.Items[0];
-    return item as TodoItem;
+    return item as CarItem;
   }
 
-  async createTodo(todoItem: TodoItem): Promise<TodoItem> {
+  async createCar(carItem: CarItem): Promise<CarItem> {
     await this.docClient
       .put({
-        TableName: this.todosTable,
-        Item: todoItem,
+        TableName: this.carsTable,
+        Item: carItem,
       })
       .promise();
 
-    return todoItem;
+    return carItem;
   }
 
-  async deleteTodo(todoId: string, createdAt: string) {
+  async deleteCar(carId: string, createdAt: string) {
     console.log("createdAt", createdAt);
 
     var params = {
-      TableName: this.todosTable,
+      TableName: this.carsTable,
       Key: {
-        todoId,
+        carId,
         createdAt,
       },
-      ConditionExpression: "todoId = :todoId and createdAt = :createdAt",
+      ConditionExpression: "carId = :carId and createdAt = :createdAt",
       ExpressionAttributeValues: {
-        ":todoId": todoId,
+        ":carId": carId,
         ":createdAt": createdAt,
       },
     };
@@ -88,42 +88,42 @@ export class TodosAccess {
     await this.docClient.delete(params).promise();
   }
 
-  async updateTodo(
-    todoId: string,
+  async updateCar(
+    carId: string,
     userId: string,
-    updatedTodo: TodoUpdate
+    updatedCar: CarUpdate
   ): Promise<void> {
-    logger.info("Updating a todo item");
-    const todoItem = await this.getTodoFor(todoId, userId);
+    logger.info("Updating a car item");
+    const carItem = await this.getCarFor(carId, userId);
     await this.docClient
       .update({
-        TableName: this.todosTable,
+        TableName: this.carsTable,
         Key: {
-          todoId: todoId,
-          createdAt: todoItem.createdAt,
+          carId: carId,
+          createdAt: carItem.createdAt,
         },
         UpdateExpression: "set #name = :name, done = :done, dueDate = :dueDate",
         ExpressionAttributeNames: { "#name": "name" },
         ExpressionAttributeValues: {
-          ":name": updatedTodo.name,
-          ":done": updatedTodo.done,
-          ":dueDate": updatedTodo.dueDate,
+          ":name": updatedCar.name,
+          ":done": updatedCar.done,
+          ":dueDate": updatedCar.dueDate,
         },
         ReturnValues: "UPDATED_NEW",
       })
       .promise();
   }
 
-  async updateTodoAttachment(todoId: string, userId: string) {
-    const url = `https://${this.bucketName}.s3.amazonaws.com/${todoId}`;
-    const todo = await this.getTodoFor(todoId, userId);
+  async updateCarAttachment(carId: string, userId: string) {
+    const url = `https://${this.bucketName}.s3.amazonaws.com/${carId}`;
+    const car = await this.getCarFor(carId, userId);
 
     await this.docClient
       .update({
-        TableName: this.todosTable,
+        TableName: this.carsTable,
         Key: {
-          todoId: todoId,
-          createdAt: todo.createdAt,
+          carId: carId,
+          createdAt: car.createdAt,
         },
         UpdateExpression: "set attachmentUrl = :attachmentUrl",
         ExpressionAttributeValues: {
@@ -134,18 +134,18 @@ export class TodosAccess {
       .promise();
   }
 
-  async todoExists(todoId: string, userId: string) {
-    const todoItem = await this.getTodoFor(todoId, userId);
+  async carExists(carId: string, userId: string) {
+    const carItem = await this.getCarFor(carId, userId);
     const parms = {
-      TableName: this.todosTable,
+      TableName: this.carsTable,
       Key: {
-        todoId: todoItem.todoId,
-        createdAt: todoItem.createdAt,
+        carId: carItem.carId,
+        createdAt: carItem.createdAt,
       },
     };
     const result = await this.docClient.get(parms).promise();
 
-    logger.info("Get todo item: ", result);
+    logger.info("Get car item: ", result);
     // !! convert to bool
     return !!result.Item;
   }

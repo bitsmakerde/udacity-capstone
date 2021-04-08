@@ -1,30 +1,30 @@
 import * as uuid from "uuid";
 
-import { TodoItem } from "../models/CarItem";
-import { TodosAccess } from "../dataLayer/carAccess";
-import { CreateTodoRequest } from "../requests/CreateCarRequest";
+import { CarItem } from "../models/CarItem";
+import { CarsAccess } from "../dataLayer/carAccess";
+import { CreateCarRequest } from "../requests/CreateCarRequest";
 import { parseUserId } from "../auth/utils";
 
-const todoAccess = new TodosAccess();
+const carAccess = new CarsAccess();
 
 import { createLogger } from "../utils/logger";
-import { TodoUpdate } from "../models/CarUpdate";
-const logger = createLogger("todos");
+import { CarUpdate } from "../models/CarUpdate";
+const logger = createLogger("cars");
 
-export async function getAllTodos(jwtToken: string): Promise<TodoItem[]> {
+export async function getAllCars(jwtToken: string): Promise<CarItem[]> {
   const userId = parseUserId(jwtToken);
-  return todoAccess.getTodosFor(userId);
+  return carAccess.getCarsFor(userId);
 }
 
-export async function createTodo(
-  createTodoRequest: CreateTodoRequest,
+export async function createCar(
+  createTodoRequest: CreateCarRequest,
   jwtToken: string
-): Promise<TodoItem> {
-  const todoId = uuid.v4();
+): Promise<CarItem> {
+  const carId = uuid.v4();
   const userId = parseUserId(jwtToken);
 
-  return await todoAccess.createTodo({
-    todoId,
+  return await carAccess.createCar({
+    carId,
     userId,
     name: createTodoRequest.name,
     createdAt: new Date().toISOString(),
@@ -33,33 +33,33 @@ export async function createTodo(
   });
 }
 
-export async function deleteTodo(todoId: string, jwtToken: string) {
+export async function deleteCar(carId: string, jwtToken: string) {
   const userId = parseUserId(jwtToken);
-  const todoItem = await todoAccess.getTodoFor(todoId, userId);
-  await todoAccess.deleteTodo(todoId, todoItem.createdAt);
+  const carItem = await carAccess.getCarFor(carId, userId);
+  await carAccess.deleteCar(carId, carItem.createdAt);
 }
 
-export async function updateTodoAttachment(todoId: string, jwtToken: string) {
+export async function updateCarAttachment(carId: string, jwtToken: string) {
   logger.info("jwtToken", jwtToken);
   const userId = parseUserId(jwtToken);
-  await todoAccess.updateTodoAttachment(todoId, userId);
+  await carAccess.updateCarAttachment(carId, userId);
 }
 
-export async function updateTodo(
-  todoId: string,
+export async function updateCar(
+  carId: string,
   jwtToken: string,
-  updatedTodo: TodoUpdate
+  updatedTodo: CarUpdate
 ) {
   logger.info("jwtToken", jwtToken);
   const userId = parseUserId(jwtToken);
-  await todoAccess.updateTodo(todoId, userId, updatedTodo);
+  await carAccess.updateCar(carId, userId, updatedTodo);
 }
 
-export async function todoExists(
-  todoId: string,
+export async function carExists(
+  carId: string,
   jwtToken: string
 ): Promise<boolean> {
   logger.info("jwtToken", jwtToken);
   const userId = parseUserId(jwtToken);
-  return await todoAccess.todoExists(todoId, userId);
+  return await carAccess.carExists(carId, userId);
 }

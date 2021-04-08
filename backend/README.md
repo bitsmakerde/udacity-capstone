@@ -187,9 +187,9 @@ TodosTable:
       - AttributeName: sortKey
         KeyType: RANGE
     BillingMode: PAY_PER_REQUEST
-    TableName: ${self:provider.environment.TODOS_TABLE}
+    TableName: ${self:provider.environment.PARCPLACES_TABLE}
     LocalSecondaryIndexes:
-      - IndexName: ${self:provider.environment.TODO_USER_ID}
+      - IndexName: ${self:provider.environment.CAR_USER_ID}
         KeySchema:
           - AttributeName: partitionKey
             KeyType: HASH

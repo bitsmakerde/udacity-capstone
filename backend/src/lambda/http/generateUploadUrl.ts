@@ -5,7 +5,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as middy from "middy";
 import { cors } from "middy/middlewares";
 import { generateUploadUrl } from "../../businessLogic/attachments";
-import { todoExists, updateTodoAttachment } from "../../businessLogic/todos";
+import { todoExists, updateTodoAttachment } from "../../businessLogic/cars";
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {

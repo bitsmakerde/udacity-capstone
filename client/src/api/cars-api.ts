@@ -1,10 +1,10 @@
 import { apiEndpoint } from '../config'
-import { Todo } from '../types/Todo'
-import { CreateTodoRequest } from '../types/CreateTodoRequest'
+import { Car } from '../types/Car'
+import { CreateCarRequest } from '../types/CreateCarRequest'
 import Axios from 'axios'
-import { UpdateTodoRequest } from '../types/UpdateTodoRequest'
+import { UpdateCarRequest } from '../types/UpdateCarRequest'
 
-export async function getTodos(idToken: string): Promise<Todo[]> {
+export async function getCars(idToken: string): Promise<Car[]> {
   console.log('Fetching cars')
 
   const response = await Axios.get(`${apiEndpoint}/cars`, {
@@ -13,17 +13,17 @@ export async function getTodos(idToken: string): Promise<Todo[]> {
       Authorization: `Bearer ${idToken}`
     }
   })
-  console.log('Todos:', response.data)
+  console.log('Cars:', response.data)
   return response.data.items
 }
 
-export async function createTodo(
+export async function createCar(
   idToken: string,
-  newTodo: CreateTodoRequest
-): Promise<Todo> {
+  newCar: CreateCarRequest
+): Promise<Car> {
   const response = await Axios.post(
     `${apiEndpoint}/cars`,
-    JSON.stringify(newTodo),
+    JSON.stringify(newCar),
     {
       headers: {
         'Content-Type': 'application/json',
@@ -34,14 +34,14 @@ export async function createTodo(
   return response.data.item
 }
 
-export async function patchTodo(
+export async function patchCar(
   idToken: string,
-  todoId: string,
-  updatedTodo: UpdateTodoRequest
+  carId: string,
+  updatedCar: UpdateCarRequest
 ): Promise<void> {
   await Axios.patch(
-    `${apiEndpoint}/cars/${todoId}`,
-    JSON.stringify(updatedTodo),
+    `${apiEndpoint}/cars/${carId}`,
+    JSON.stringify(updatedCar),
     {
       headers: {
         'Content-Type': 'application/json',
@@ -51,11 +51,8 @@ export async function patchTodo(
   )
 }
 
-export async function deleteTodo(
-  idToken: string,
-  todoId: string
-): Promise<void> {
-  await Axios.delete(`${apiEndpoint}/cars/${todoId}`, {
+export async function deleteCar(idToken: string, carId: string): Promise<void> {
+  await Axios.delete(`${apiEndpoint}/cars/${carId}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`
@@ -65,10 +62,10 @@ export async function deleteTodo(
 
 export async function getUploadUrl(
   idToken: string,
-  todoId: string
+  carId: string
 ): Promise<string> {
   const response = await Axios.post(
-    `${apiEndpoint}/cars/${todoId}/attachment`,
+    `${apiEndpoint}/cars/${carId}/attachment`,
     '',
     {
       headers: {

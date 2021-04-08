@@ -1,5 +1,5 @@
-export interface Todo {
-  todoId: string
+export interface Car {
+  carId: string
   createdAt: string
   name: string
   dueDate: string

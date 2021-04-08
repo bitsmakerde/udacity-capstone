@@ -12,9 +12,9 @@ import { CarUpdate } from "../models/CarUpdate";
 export class CarsAccess {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly carsTable = process.env.PARCPLACES_TABLE,
+    private readonly carsTable = process.env.CAR_TABLE,
     private readonly carUserId = process.env.CAR_USER_ID,
-    private readonly bucketName = process.env.ATTACHMENTS_S3_BUCKET
+    private readonly bucketName = process.env.CARS_S3_BUCKET
   ) {}
 
   async getCarsFor(userId: string): Promise<CarItem[]> {

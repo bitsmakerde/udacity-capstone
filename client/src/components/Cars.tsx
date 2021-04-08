@@ -14,90 +14,90 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/cars-api'
+import { createCar, deleteCar, getCars, patchCar } from '../api/cars-api'
 import Auth from '../auth/Auth'
-import { Todo } from '../types/Todo'
+import { Car } from '../types/Car'
 
-interface TodosProps {
+interface CarsProps {
   auth: Auth
   history: History
 }
 
-interface TodosState {
-  todos: Todo[]
-  newTodoName: string
-  loadingTodos: boolean
+interface CarsState {
+  cars: Car[]
+  newCarName: string
+  loadingCars: boolean
 }
 
-export class Todos extends React.PureComponent<TodosProps, TodosState> {
-  state: TodosState = {
-    todos: [],
-    newTodoName: '',
-    loadingTodos: true
+export class Cars extends React.PureComponent<CarsProps, CarsState> {
+  state: CarsState = {
+    cars: [],
+    newCarName: '',
+    loadingCars: true
   }
 
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newTodoName: event.target.value })
+    this.setState({ newCarName: event.target.value })
   }
 
-  onEditButtonClick = (todoId: string) => {
-    this.props.history.push(`/todos/${todoId}/edit`)
+  onEditButtonClick = (carId: string) => {
+    this.props.history.push(`/cars/${carId}/edit`)
   }
 
-  onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onCarCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
       const dueDate = this.calculateDueDate()
-      const newTodo = await createTodo(this.props.auth.getIdToken(), {
-        name: this.state.newTodoName,
+      const newCar = await createCar(this.props.auth.getIdToken(), {
+        name: this.state.newCarName,
         dueDate
       })
       this.setState({
-        todos: [...this.state.todos, newTodo],
-        newTodoName: ''
+        cars: [...this.state.cars, newCar],
+        newCarName: ''
       })
     } catch {
-      alert('Todo creation failed')
+      alert('Car creation failed')
     }
   }
 
-  onTodoDelete = async (todoId: string) => {
+  onCarDelete = async (carId: string) => {
     try {
-      await deleteTodo(this.props.auth.getIdToken(), todoId)
+      await deleteCar(this.props.auth.getIdToken(), carId)
       this.setState({
-        todos: this.state.todos.filter((todo) => todo.todoId != todoId)
+        cars: this.state.cars.filter((car) => car.carId != carId)
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Car deletion failed')
     }
   }
 
-  onTodoCheck = async (pos: number) => {
+  onCarCheck = async (pos: number) => {
     try {
-      const todo = this.state.todos[pos]
-      await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
-        name: todo.name,
-        dueDate: todo.dueDate,
-        done: !todo.done
+      const car = this.state.cars[pos]
+      await patchCar(this.props.auth.getIdToken(), car.carId, {
+        name: car.name,
+        dueDate: car.dueDate,
+        done: !car.done
       })
       this.setState({
-        todos: update(this.state.todos, {
-          [pos]: { done: { $set: !todo.done } }
+        cars: update(this.state.cars, {
+          [pos]: { done: { $set: !car.done } }
         })
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Car deletion failed')
     }
   }
 
   async componentDidMount() {
     try {
-      const todos = await getTodos(this.props.auth.getIdToken())
+      const cars = await getCars(this.props.auth.getIdToken())
       this.setState({
-        todos,
-        loadingTodos: false
+        cars,
+        loadingCars: false
       })
     } catch (e) {
-      alert(`Failed to fetch todos: ${e.message}`)
+      alert(`Failed to fetch cars: ${e.message}`)
     }
   }
 
@@ -106,14 +106,14 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       <div>
         <Header as="h1">CARs</Header>
 
-        {this.renderCreateTodoInput()}
+        {this.renderCreateCarInput()}
 
-        {this.renderTodos()}
+        {this.renderCars()}
       </div>
     )
   }
 
-  renderCreateTodoInput() {
+  renderCreateCarInput() {
     return (
       <Grid.Row>
         <Grid.Column width={16}>
@@ -122,8 +122,8 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               color: 'teal',
               labelPosition: 'left',
               icon: 'add',
-              content: 'New task',
-              onClick: this.onTodoCreate
+              content: 'New Car',
+              onClick: this.onCarCreate
             }}
             fluid
             actionPosition="left"
@@ -138,12 +138,12 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     )
   }
 
-  renderTodos() {
-    if (this.state.loadingTodos) {
+  renderCars() {
+    if (this.state.loadingCars) {
       return this.renderLoading()
     }
 
-    return this.renderTodosList()
+    return this.renderCarsList()
   }
 
   renderLoading() {
@@ -156,29 +156,29 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     )
   }
 
-  renderTodosList() {
+  renderCarsList() {
     return (
       <Grid padded>
-        {this.state.todos.map((todo, pos) => {
+        {this.state.cars.map((car, pos) => {
           return (
-            <Grid.Row key={todo.todoId}>
+            <Grid.Row key={car.carId}>
               <Grid.Column width={1} verticalAlign="middle">
                 <Checkbox
-                  onChange={() => this.onTodoCheck(pos)}
-                  checked={todo.done}
+                  onChange={() => this.onCarCheck(pos)}
+                  checked={car.done}
                 />
               </Grid.Column>
               <Grid.Column width={10} verticalAlign="middle">
-                {todo.name}
+                {car.name}
               </Grid.Column>
               <Grid.Column width={3} floated="right">
-                {todo.dueDate}
+                {car.dueDate}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
                   color="blue"
-                  onClick={() => this.onEditButtonClick(todo.todoId)}
+                  onClick={() => this.onEditButtonClick(car.carId)}
                 >
                   <Icon name="pencil" />
                 </Button>
@@ -187,13 +187,13 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                 <Button
                   icon
                   color="red"
-                  onClick={() => this.onTodoDelete(todo.todoId)}
+                  onClick={() => this.onCarDelete(car.carId)}
                 >
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {todo.attachmentUrl && (
-                <Image src={todo.attachmentUrl} size="small" wrapped />
+              {car.attachmentUrl && (
+                <Image src={car.attachmentUrl} size="small" wrapped />
               )}
               <Grid.Column width={16}>
                 <Divider />

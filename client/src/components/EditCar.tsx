@@ -9,25 +9,22 @@ enum UploadState {
   UploadingFile
 }
 
-interface EditTodoProps {
+interface EditCarProps {
   match: {
     params: {
-      todoId: string
+      carId: string
     }
   }
   auth: Auth
 }
 
-interface EditTodoState {
+interface EditCarState {
   file: any
   uploadState: UploadState
 }
 
-export class EditTodo extends React.PureComponent<
-  EditTodoProps,
-  EditTodoState
-> {
-  state: EditTodoState = {
+export class EditCar extends React.PureComponent<EditCarProps, EditCarState> {
+  state: EditCarState = {
     file: undefined,
     uploadState: UploadState.NoUpload
   }
@@ -53,7 +50,7 @@ export class EditTodo extends React.PureComponent<
       this.setUploadState(UploadState.FetchingPresignedUrl)
       const uploadUrl = await getUploadUrl(
         this.props.auth.getIdToken(),
-        this.props.match.params.todoId
+        this.props.match.params.carId
       )
 
       this.setUploadState(UploadState.UploadingFile)
